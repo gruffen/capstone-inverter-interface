@@ -41,7 +41,7 @@ class ProductionFwGUI(QDialog):
 
         # ADC widgets
         adcSelect = QComboBox(self)
-        adcSelect.addItem("DC_Battery_Voltage") # TODO: can make this a loop
+        adcSelect.addItem("DC_Battery_Voltage")
         adcSelect.addItem("COM1")
         adcSelect.addItem("COM2")
         adcSelect.addItem("COM3")
@@ -54,12 +54,15 @@ class ProductionFwGUI(QDialog):
 
         # PWM widgets
         pwmSelect = QComboBox(self)
-        pwmSelect.addItem("PWM_DC") # TODO: can make this a loop
+        pwmSelect.addItem("PWM_DC")
         pwmSelect.addItem("COM1")
         pwmSelect.addItem("COM2")
         pwmSelect.addItem("COM3")
-        pwmSelLabel = QLabel("Select ADC:")
+        pwmSelLabel = QLabel("Select PWM:")
         pwmSelLabel.setBuddy(gpioSelect)
+        pwmParamSelect = QComboBox(self)
+        pwmParamSelect.addItem("Duty Cycle") 
+        pwmParamSelect.addItem("Frequency")
 
         pwmReadButton = QPushButton("Read")
         pwmReadLineEdit = QLineEdit('')
@@ -67,7 +70,6 @@ class ProductionFwGUI(QDialog):
 
         pwmSetButton = QPushButton("Set")
         pwmSetLineEdit = QLineEdit('')
-
 
         #### LAYOUTS ####
         topLayout = QHBoxLayout()
@@ -91,6 +93,7 @@ class ProductionFwGUI(QDialog):
         row3Layout = QHBoxLayout()
         row3Layout.addWidget(pwmSelLabel)
         row3Layout.addWidget(pwmSelect)
+        row3Layout.addWidget(pwmParamSelect)
         row3Layout.addWidget(pwmReadButton)
         row3Layout.addWidget(pwmReadLineEdit)
         row3Layout.addWidget(pwmSetButton)
