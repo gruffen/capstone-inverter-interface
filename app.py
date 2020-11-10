@@ -7,6 +7,114 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
         QVBoxLayout, QWidget)
 
+import GpioTester
+import os
+import time
+import serial
+import serial.tools.list_ports
+
+def serial_ports():
+    return serial.tools.list_ports.comports()
+
+def on_select(selected):
+    global baudrate
+    baudrate = 115200 # do not change
+    global port
+    port = selected[selected.find("(")+1:selected.find(")")]
+    global gpioTester
+    gpioTester = GpioTester.GpioTester()
+    gpioTester.init_board(baudrate, port)
+
+def set_gpio(pin, value):
+    try:
+        gpioTester
+    except NameError:
+        print("Error: Please select a COM port")
+        return
+
+    if (pin == "Gpio21"):
+        print("GPIO " + pin + " is a relay")
+        gpioTester.set_relay("AcK7", value)
+    elif (pin == "Gpio24"):
+        print("GPIO " + pin + " is a relay")
+        gpioTester.set_relay("AcK5", value)
+    elif (pin == "Gpio25"):
+        print("GPIO " + pin + " is a relay")
+        gpioTester.set_relay("AcK6", value)
+    elif (pin == "Gpio37"):
+        print("GPIO " + pin + " is a relay")
+        gpioTester.set_relay("DcK1K2", value)
+    elif (pin == "Gpio49"):
+        print("GPIO " + pin + " is a relay")
+        gpioTester.set_relay("AcK8", value)
+    else:
+        gpioTester.set_gpio(pin, value)
+
+def read_gpio(pin):
+    try:
+        gpioTester
+    except NameError:
+        print("Error: Please select a COM port")
+        return
+
+    gpioTester.get_gpio(pin)
+
+def read_adc(channel):
+    try:
+        gpioTester
+    except NameError:
+        print("Error: Please select a COM port")
+        return
+    
+    gpioTester.get_adc(channel)
+
+
+def set_pwm(pwm, value):
+    try:
+        gpioTester
+    except NameError:
+        print("Error: Please select a COM port")
+        return
+
+    gpioTester.set_pwm(pwm, value)
+
+def set_pwmfrequency(value):
+    try:
+        gpioTester
+    except NameError:
+        print("Error: Please select a COM port")
+        return
+
+    gpioTester.set_pwmfrequency(value)
+
+def get_pwmfrequency(pwm_frequency):
+    try:
+        gpioTester
+    except NameError:
+        print("Error: Please select a COM port")
+        return
+
+    gpioTester.get_pwmfrequency(pwm_frequency)
+
+
+def set_pwmdutycycle(value):
+    try:
+        gpioTester
+    except NameError:
+        print("Error: Please select a COM port")
+        return
+
+    gpioTester.set_pwmdutycycle(value)
+
+
+def get_pwmdutycycle(pwm_dutycycle):
+    try:
+        gpioTester
+    except NameError:
+        print("Error: Please select a COM port")
+        return
+
+    gpioTester.get_pwmdutycycle(pwm_dutycycle)
 
 class ProductionFwGUI(QDialog):
     def __init__(self, parent=None):
@@ -14,7 +122,8 @@ class ProductionFwGUI(QDialog):
 
         # COM port select widgets
         comPortSelect = QComboBox(self)
-        comPortSelect.addItem("COM0") # TODO: can make this a loop
+        comPortSelect.addItem("Select")
+        comPortSelect.addItem("COM0")
         comPortSelect.addItem("COM1")
         comPortSelect.addItem("COM2")
         comPortSelect.addItem("COM3")
@@ -24,6 +133,7 @@ class ProductionFwGUI(QDialog):
 
         # GPIO widgets
         gpioSelect = QComboBox(self)
+        gpioSelect.addItem("Select")
         gpioSelect.addItem("K5_Relay") # TODO: can make this a loop
         gpioSelect.addItem("COM1")
         gpioSelect.addItem("COM2")
@@ -41,8 +151,8 @@ class ProductionFwGUI(QDialog):
 
         # ADC widgets
         adcSelect = QComboBox(self)
+        adcSelect.addItem("Select")
         adcSelect.addItem("DC_Battery_Voltage")
-        adcSelect.addItem("COM1")
         adcSelect.addItem("COM2")
         adcSelect.addItem("COM3")
         adcSelLabel = QLabel("Select ADC:")
