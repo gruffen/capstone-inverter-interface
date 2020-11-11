@@ -65,6 +65,7 @@ class ProductionFwGUI(QDialog):
         # PWM widgets
         pwmSelect = QComboBox(self)
         pwmSelect.setFixedWidth(150)
+        pwmSelect.addItem("Select")
         pwmSelect.addItem("PWM_DC")
         pwmSelect.addItem("COM1")
         pwmSelect.addItem("COM2")
@@ -89,8 +90,6 @@ class ProductionFwGUI(QDialog):
         topLayout.addWidget(comPortSelect)
         topLayout.setSpacing(10)
         topLayout.addStretch(1)
-        
-      
 
         row1Layout = QHBoxLayout()
         row1Layout.addWidget(gpioSelLabel)
@@ -100,7 +99,6 @@ class ProductionFwGUI(QDialog):
         row1Layout.addWidget(gpioReadButton)
         row1Layout.addWidget(gpioLineEdit)
         row1Layout.setSpacing(38)
-
 
         row2Layout = QHBoxLayout()
         row2Layout.addWidget(adcSelLabel)
@@ -131,6 +129,8 @@ class ProductionFwGUI(QDialog):
 
         self.setWindowTitle("Production FW Interface")
         QApplication.setStyle(QStyleFactory.create('Fusion'))
+        self.setFixedWidth(1000)
+        self.setFixedHeight(250)
 
         self.setStyleSheet(open('main.qss').read())
 
