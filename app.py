@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 
-from PyQt5.QtCore import QDateTime, Qt, QTimer
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
         QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
         QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
         QVBoxLayout, QWidget)
 
-import GpioTester
 import os
 import time
-import serial
-import serial.tools.list_ports
 
 class ProductionFwGUI(QDialog):
     def __init__(self, parent=None):
@@ -116,6 +114,7 @@ class ProductionFwGUI(QDialog):
         self.setWindowTitle("Production FW Interface")
         QApplication.setStyle(QStyleFactory.create('Fusion'))
 
+        self.setStyleSheet(open('main.qss').read())
 
 if __name__ == '__main__':
 
