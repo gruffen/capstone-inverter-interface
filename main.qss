@@ -78,7 +78,7 @@ QWidget:disabled {
 }
 
 QWidget::item:selected {
-  background-color: #1464A0;
+  background-color: #4CCFEF;  
 }
 
 QWidget::item:hover {
@@ -1000,9 +1000,10 @@ https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qpushbutton
 
 --------------------------------------------------------------------------- */
 QPushButton {
-  background-color: #5E81AC;
-  border: 1px solid #5E81AC;
-  color: #F0F0F0;
+  background-color: #4CCFEF;
+  font: bold;
+  border: 1px solid #4CCFEF;
+  color: #000000;
   border-radius: 4px;
   padding: 3px;
   outline: none;
