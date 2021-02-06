@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
         QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
         QVBoxLayout, QWidget)
-
+from PyQt5 import QtWidgets
 import os
 import time
 import GpioTester
@@ -23,7 +23,7 @@ def get_serial_ports():
 def set_serial_port():
     global gpioTester
     #TODO: change for windows later
-    port = '/dev/ttyUSB0'
+    port = ''
     gpioTester = GpioTester.GpioTester()
     gpioTester.init_board(BAUDRATE, port)
 
@@ -32,11 +32,26 @@ class ProductionFwGUI(QDialog):
         try:
             gpioTester
         except NameError:
-            print("Error: Please select a COM port")
+            set_textbox("Error: Please select a COM port")
             return
 
     def __init__(self, parent=None):
         super(ProductionFwGUI, self).__init__(parent)
+
+
+
+        #STD output widget
+        #self.le = QtWidgets.QLineEdit()
+        self.te = QtWidgets.QTextEdit()
+        clear_button = QPushButton("Clear")
+        def clear_text():
+            self.te.setText("")
+        clear_button.clicked.connect(clear_text)
+        
+        #used to write outputs
+        def set_textbox(message):
+            self.te.setText(self.te.toPlainText()+message+"\n")
+
 
         # COM port select widgets
         comPortSelect = QComboBox(self)
@@ -131,12 +146,18 @@ class ProductionFwGUI(QDialog):
         row3Layout.addWidget(pwmSetLineEdit)
         row3Layout.setSpacing(37)
         row3Layout.addStretch(1)
+
+        row4Layout = QHBoxLayout()
+        #row4Layout.addWidget(self.le)
+        row4Layout.addWidget(self.te)
+        row4Layout.addWidget(clear_button)
         
         mainLayout = QGridLayout()
         mainLayout.addLayout(topLayout,0,0)
         mainLayout.addLayout(row1Layout,1,0)
         mainLayout.addLayout(row2Layout,2,0)
         mainLayout.addLayout(row3Layout,3,0)
+        mainLayout.addLayout(row4Layout,4,0)
      
         self.setLayout(mainLayout)
 
@@ -151,25 +172,25 @@ class ProductionFwGUI(QDialog):
             #return 1 if self.check_conn() == 'None' else None
             net = str(gpioSelect.currentText())
             if (net == "Select"):
-                print("Please select a GPIO pin")
+                set_textbox("Please select a GPIO pin")
                 return
             pin = pinmap.getGpioMapping(net)
             value = 1 if gpioHighLowSelect.currentText() == 'High' else 0
             # TODO: clean this up
             if (pin == "Gpio21"):
-                print("GPIO " + pin + " is a relay")
+                set_textbox("GPIO " + pin + " is a relay")
                 gpioTester.set_relay("AcK7", value)
             elif (pin == "Gpio24"):
-                print("GPIO " + pin + " is a relay")
+                set_textbox("GPIO " + pin + " is a relay")
                 gpioTester.set_relay("AcK5", value)
             elif (pin == "Gpio25"):
-                print("GPIO " + pin + " is a relay")
+                set_textbox("GPIO " + pin + " is a relay")
                 gpioTester.set_relay("AcK6", value)
             elif (pin == "Gpio37"):
-                print("GPIO " + pin + " is a relay")
+                set_textbox("GPIO " + pin + " is a relay")
                 gpioTester.set_relay("DcK1K2", value)
             elif (pin == "Gpio49"):
-                print("GPIO " + pin + " is a relay")
+                set_textbox("GPIO " + pin + " is a relay")
                 gpioTester.set_relay("AcK8", value)
             else:
                 gpioTester.set_gpio(pin, value)
@@ -177,7 +198,7 @@ class ProductionFwGUI(QDialog):
         def read_gpio():
             net = str(gpioSelect.currentText())
             if (net == "Select"):
-                print("Please select a GPIO pin")
+                set_textbox("Please select a GPIO pin")
                 return
             pin = pinmap.getGpioMapping(net)
             value = gpioTester.get_gpio(pin)
@@ -186,7 +207,7 @@ class ProductionFwGUI(QDialog):
         def read_adc():
             net = str(adcSelect.currentText())
             if (net == "Select"):
-                print("Please select an ADC")
+                set_textbox("Please select an ADC")
                 return
             channel = pinmap.getAdcMapping(net)
             value = gpioTester.get_adc(channel)
