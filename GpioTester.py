@@ -1,6 +1,6 @@
 import SerialConnector
 import time
-
+import re
 
 class GpioTester(object):
 
@@ -21,6 +21,10 @@ class GpioTester(object):
         self.__serial.send_read_gpio_command(gpio)
         response = self.__serial.readlines()
         print("Response: " + str(response))
+
+        # get value of gpio
+        value = re.search(r'\d+', str(response)).group()
+        return value
 
         # This does not match the return format
         ########################################
@@ -50,6 +54,9 @@ class GpioTester(object):
         self.__serial.send_get_adc_command(channel)
         response = self.__serial.readlines()
         print("Response: " + str(response))
+
+        values = re.findall(r'\d+', str(response))
+        return values[2]
 
     def set_pwm(self, pwm, enable):
         print("Set " + pwm + " to " + ("disabled", "enabled")[enable])

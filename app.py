@@ -10,20 +10,40 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
 
 import os
 import time
+import GpioTester
+import PinMappings as pinmap
+import serial
+import serial.tools.list_ports
+
+BAUDRATE = 115200
+
+def get_serial_ports():
+    return serial.tools.list_ports.comports()
+
+def set_serial_port():
+    global gpioTester
+    #TODO: change for windows later
+    port = '/dev/ttyUSB0'
+    gpioTester = GpioTester.GpioTester()
+    gpioTester.init_board(BAUDRATE, port)
 
 class ProductionFwGUI(QDialog):
+    def check_conn(self):
+        try:
+            gpioTester
+        except NameError:
+            print("Error: Please select a COM port")
+            return
+
     def __init__(self, parent=None):
         super(ProductionFwGUI, self).__init__(parent)
 
         # COM port select widgets
         comPortSelect = QComboBox(self)
         comPortSelect.addItem("Select")
-        comPortSelect.addItem("COM0")
-        comPortSelect.addItem("COM1")
-        comPortSelect.addItem("COM2")
-        comPortSelect.addItem("COM3")
+        serial_ports = get_serial_ports()
+        comPortSelect.addItems(map(str, serial_ports))
         comPortSelect.setFixedWidth(150)
-
 
         comPortLabel = QLabel("Select COM Port:")
         comPortLabel.setBuddy(comPortSelect)
@@ -31,10 +51,7 @@ class ProductionFwGUI(QDialog):
         # GPIO widgets
         gpioSelect = QComboBox(self)
         gpioSelect.addItem("Select")
-        gpioSelect.addItem("K5_Relay")
-        gpioSelect.addItem("COM1")
-        gpioSelect.addItem("COM2")
-        gpioSelect.addItem("COM3")
+        gpioSelect.addItems(pinmap.getGpioList())
         gpioSelLabel = QLabel("Select GPIO:")
         gpioSelLabel.setBuddy(gpioSelect)
         gpioSelect.setFixedWidth(150)
@@ -46,14 +63,11 @@ class ProductionFwGUI(QDialog):
         gpioSetButton = QPushButton("Set")
         gpioLineEdit = QLineEdit('')
         gpioLineEdit.setReadOnly(True)
-       
 
         # ADC widgets
         adcSelect = QComboBox(self)
         adcSelect.addItem("Select")
-        adcSelect.addItem("DC_Battery_Voltage")
-        adcSelect.addItem("COM2")
-        adcSelect.addItem("COM3")
+        adcSelect.addItems(pinmap.getAdcList())
         adcSelLabel = QLabel("Select ADC:")
         adcSelLabel.setBuddy(gpioSelect)
         adcSelect.setFixedWidth(150)
@@ -82,9 +96,8 @@ class ProductionFwGUI(QDialog):
 
         pwmSetButton = QPushButton("Set")
         pwmSetLineEdit = QLineEdit('')
-   
     
-       #### LAYOUTS ####
+        #### LAYOUTS ####
         topLayout = QHBoxLayout() 
         topLayout.addWidget(comPortLabel)
         topLayout.addWidget(comPortSelect)
@@ -133,6 +146,56 @@ class ProductionFwGUI(QDialog):
         self.setFixedHeight(250)
 
         self.setStyleSheet(open('main.qss').read())
+
+        def set_gpio():
+            #return 1 if self.check_conn() == 'None' else None
+            net = str(gpioSelect.currentText())
+            if (net == "Select"):
+                print("Please select a GPIO pin")
+                return
+            pin = pinmap.getGpioMapping(net)
+            value = 1 if gpioHighLowSelect.currentText() == 'High' else 0
+            # TODO: clean this up
+            if (pin == "Gpio21"):
+                print("GPIO " + pin + " is a relay")
+                gpioTester.set_relay("AcK7", value)
+            elif (pin == "Gpio24"):
+                print("GPIO " + pin + " is a relay")
+                gpioTester.set_relay("AcK5", value)
+            elif (pin == "Gpio25"):
+                print("GPIO " + pin + " is a relay")
+                gpioTester.set_relay("AcK6", value)
+            elif (pin == "Gpio37"):
+                print("GPIO " + pin + " is a relay")
+                gpioTester.set_relay("DcK1K2", value)
+            elif (pin == "Gpio49"):
+                print("GPIO " + pin + " is a relay")
+                gpioTester.set_relay("AcK8", value)
+            else:
+                gpioTester.set_gpio(pin, value)
+        
+        def read_gpio():
+            net = str(gpioSelect.currentText())
+            if (net == "Select"):
+                print("Please select a GPIO pin")
+                return
+            pin = pinmap.getGpioMapping(net)
+            value = gpioTester.get_gpio(pin)
+            gpioLineEdit.setText(value)
+        
+        def read_adc():
+            net = str(adcSelect.currentText())
+            if (net == "Select"):
+                print("Please select an ADC")
+                return
+            channel = pinmap.getAdcMapping(net)
+            value = gpioTester.get_adc(channel)
+            adcLineEdit.setText(value)
+
+        gpioSetButton.clicked.connect(set_gpio)
+        gpioReadButton.clicked.connect(read_gpio)
+        adcReadButton.clicked.connect(read_adc)
+        comPortSelect.currentTextChanged.connect(set_serial_port)
 
 if __name__ == '__main__':
 
