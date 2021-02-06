@@ -33,7 +33,7 @@ class ProductionFwGUI(QDialog):
             gpioTester
         except NameError:
             print("Error: Please select a COM port")
-            return
+            return 1
 
     def __init__(self, parent=None):
         super(ProductionFwGUI, self).__init__(parent)
@@ -148,7 +148,7 @@ class ProductionFwGUI(QDialog):
         self.setStyleSheet(open('main.qss').read())
 
         def set_gpio():
-            #return 1 if self.check_conn() == 'None' else None
+            #return 1 if self.check_conn() == 1 else None
             net = str(gpioSelect.currentText())
             if (net == "Select"):
                 print("Please select a GPIO pin")
@@ -204,4 +204,5 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     gallery = ProductionFwGUI()
     gallery.show()
-    sys.exit(app.exec_()) 
+    
+    sys.exit(app.exec_())
