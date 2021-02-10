@@ -56,6 +56,17 @@ adcMapping = {
     'V_AC_L1_GridTerminal': 'ADC2_B7'
 }
 
+pwmMapping = {
+    'PWM1': 'ePwm1',
+    'PWM2': 'ePwm2',
+    'PWM3': 'ePwm3',
+    'PWM4': 'ePwm4',
+    'PWM5': 'ePwm5',
+    'PWM6': 'ePwm6',
+    'PWM7': 'ePwm7',
+    'PWM8': 'ePwm8'
+}
+
 def getGpioList():
     return list(gpioMapping.keys())
 
@@ -67,6 +78,12 @@ def getAdcList():
 
 def getAdcMapping(key):
     return adcMapping.get(str(key))
+
+def getPwmList():
+    return list(pwmMapping.keys())
+
+def getPwmMapping(key):
+    return pwmMapping.get(str(key))
 
 if __name__ == '__main__':
     print(gpioMapping)

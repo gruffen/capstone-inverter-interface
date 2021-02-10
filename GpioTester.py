@@ -64,6 +64,8 @@ class GpioTester(object):
         response = self.__serial.readlines()
         print("Response: " + str(response))
 
+        return str(response)
+
     def set_pwmfrequency(self, value):
         if value>=10000 and value<=80000:
             print("Set " + "pwm_frequency" + " = " + str(value))
@@ -79,21 +81,28 @@ class GpioTester(object):
         response = self.__serial.readlines()
         print("Response: " + str(response))
 
+        return str(response)
+
     def set_pwmdutycycle(self, value):
         if value >= 0 and value <= 100:
             print("Set " + "pwm_dutycycle" + " = " + str(value))
             self.__serial.send_set_pwmdutycycle_command(value)
             response = self.__serial.readlines()
             print("Response: " + str(response))
+            return str(response)
         else:
-            print("Dutycycle should be between 0 and 100")
+            errortxt = "Dutycycle should be between 0 and 100"
+            print(errortext)
+            return errortxt
+        
+        
 
     def get_pwmdutycycle(self, pwm_dutycycle):
         print("Get pwm_dutycycle = " + pwm_dutycycle.upper())
         self.__serial.send_get_pwmdutycycle_command(pwm_dutycycle)
         response = self.__serial.readlines()
         print("Response: " + str(response))
-
+        
 
     @staticmethod
     def wait_any_key():
