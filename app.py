@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
         QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
         QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
-        QVBoxLayout, QWidget)
+        QVBoxLayout, QWidget, QFileDialog)
 from PyQt5 import QtWidgets
 import os
 import time
@@ -14,6 +14,8 @@ import GpioTester
 import PinMappings as pinmap
 import serial
 import serial.tools.list_ports
+
+from ScriptParser import ScriptParser
 
 BAUDRATE = 115200
 
@@ -50,7 +52,6 @@ class ProductionFwGUI(QDialog):
         def set_textbox(message):
             self.te.setText(self.te.toPlainText()+message+"\n")
 
-
         # COM port select widgets
         comPortSelect = QComboBox(self)
         comPortSelect.addItem("Select")
@@ -60,6 +61,8 @@ class ProductionFwGUI(QDialog):
 
         comPortLabel = QLabel("Select COM Port:")
         comPortLabel.setBuddy(comPortSelect)
+
+        scriptButton = QPushButton("Select Script...")
 
         # GPIO widgets
         gpioSelect = QComboBox(self)
@@ -114,6 +117,7 @@ class ProductionFwGUI(QDialog):
         topLayout.addWidget(comPortSelect)
         topLayout.setSpacing(10)
         topLayout.addStretch(1)
+        topLayout.addWidget(scriptButton)
 
         row1Layout = QHBoxLayout()
         row1Layout.addWidget(gpioSelLabel)
@@ -235,12 +239,18 @@ class ProductionFwGUI(QDialog):
             mPwm = pinmap.getPwmMapping(pwm)
             param = str(pwmParamSelect.currentText())
             #TODO: finish this
+        
+        def get_files():
+            parser = ScriptParser(gpioTester)
+            fname = QFileDialog.getOpenFileName(self, 'Open file', '~/',"Text files (*.txt)")
+            parser.parseFile(str(fname[0]))
     
         gpioSetButton.clicked.connect(set_gpio)
         gpioReadButton.clicked.connect(read_gpio)
         adcReadButton.clicked.connect(read_adc)
         pwmSetButton.clicked.connect(set_pwm)
         comPortSelect.currentTextChanged.connect(set_serial_port)
+        scriptButton.clicked.connect(get_files)
 
 if __name__ == '__main__':
 
