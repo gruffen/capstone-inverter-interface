@@ -17,6 +17,8 @@ import serial.tools.list_ports
 
 from ScriptParser import ScriptParser
 
+isConnected = False
+
 BAUDRATE = 115200
 
 def get_serial_ports():
@@ -28,6 +30,7 @@ def set_serial_port():
     port = '/dev/ttyUSB0'
     gpioTester = GpioTester.GpioTester()
     gpioTester.init_board(BAUDRATE, port)
+    isConnected = True
 
 class ProductionFwGUI(QDialog):
     def check_conn(self):
@@ -169,7 +172,9 @@ class ProductionFwGUI(QDialog):
         self.setStyleSheet(open('main.qss').read())
 
         def set_gpio():
-            #return 1 if self.check_conn() == 1 else None
+            if not (isConnected):
+                set_textbox("Please select a COM port")
+                return
             net = str(gpioSelect.currentText())
             if (net == "Select"):
                 set_textbox("Please select a GPIO pin")
@@ -196,6 +201,9 @@ class ProductionFwGUI(QDialog):
                 gpioTester.set_gpio(pin, value)
         
         def read_gpio():
+            if not (isConnected):
+                set_textbox("Please select a COM port")
+                return
             net = str(gpioSelect.currentText())
             if (net == "Select"):
                 set_textbox("Please select a GPIO pin")
@@ -205,6 +213,9 @@ class ProductionFwGUI(QDialog):
             gpioLineEdit.setText(value)
         
         def read_adc():
+            if not (isConnected):
+                set_textbox("Please select a COM port")
+                return
             net = str(adcSelect.currentText())
             if (net == "Select"):
                 set_textbox("Please select an ADC")
@@ -214,6 +225,9 @@ class ProductionFwGUI(QDialog):
             adcLineEdit.setText(value)
 
         def set_pwm():
+            if not (isConnected):
+                set_textbox("Please select a COM port")
+                return
             pwm = str(pwmSelect.currentText())
             if (pwm == "Select"):
                 set_textbox("Please select a PWM")
@@ -232,6 +246,9 @@ class ProductionFwGUI(QDialog):
             set_textbox(res)
 
         def read_pwm():
+            if not (isConnected):
+                set_textbox("Please select a COM port")
+                return
             pwm = str(pwmSelect.currentText())
             if (pwm == "Select"):
                 set_textbox("Please select a PWM")
@@ -241,6 +258,9 @@ class ProductionFwGUI(QDialog):
             #TODO: finish this
         
         def get_files():
+            if not (isConnected):
+                set_textbox("Please connect to device before running script")
+                return
             parser = ScriptParser(gpioTester)
             fname = QFileDialog.getOpenFileName(self, 'Open file', '~/',"Text files (*.txt)")
             parser.parseFile(str(fname[0]))
