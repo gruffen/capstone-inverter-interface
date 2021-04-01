@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
         QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
         QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
-        QVBoxLayout, QWidget, QFileDialog)
+        QVBoxLayout, QWidget, QFileDialog, QListView)
 from PyQt5 import QtWidgets
 import os
 import time
@@ -16,26 +16,18 @@ import serial
 import serial.tools.list_ports
 
 from ScriptParser import ScriptParser
+
 BAUDRATE = 115200
 
 def get_serial_ports():
     return serial.tools.list_ports.comports()
 
-def set_serial_port():
+def set_serial_port(port):
     global gpioTester
-    #TODO: change for windows later
-    port = '/dev/ttyUSB0'
     gpioTester = GpioTester.GpioTester()
     gpioTester.init_board(BAUDRATE, port)
 
 class ProductionFwGUI(QDialog):
-    def check_conn(self):
-        try:
-            gpioTester
-        except NameError:
-            set_textbox("Error: Please select a COM port")
-            return
-
     def __init__(self, parent=None):
         super(ProductionFwGUI, self).__init__(parent)
 
@@ -52,7 +44,7 @@ class ProductionFwGUI(QDialog):
             self.te.setText(self.te.toPlainText()+message+"\n")
 
         # COM port select widgets
-        comPortSelect = QComboBox(self)
+        comPortSelect = QComboBox(self)        
         comPortSelect.addItem("Select")
         serial_ports = get_serial_ports()
         comPortSelect.addItems(map(str, serial_ports))
@@ -166,8 +158,13 @@ class ProductionFwGUI(QDialog):
         self.setFixedHeight(250)
 
         self.setStyleSheet(open('main.qss').read())
-
+        
         def set_gpio():
+            try:
+                gpioTester
+            except NameError:
+                set_textbox("Error: Please select a COM port")
+                return
             net = str(gpioSelect.currentText())
             if (net == "Select"):
                 set_textbox("Please select a GPIO pin")
@@ -194,6 +191,11 @@ class ProductionFwGUI(QDialog):
                 gpioTester.set_gpio(pin, value)
         
         def read_gpio():
+            try:
+                gpioTester
+            except NameError:
+                set_textbox("Error: Please select a COM port")
+                return
             net = str(gpioSelect.currentText())
             if (net == "Select"):
                 set_textbox("Please select a GPIO pin")
@@ -203,6 +205,11 @@ class ProductionFwGUI(QDialog):
             gpioLineEdit.setText(value)
         
         def read_adc():
+            try:
+                gpioTester
+            except NameError:
+                set_textbox("Error: Please select a COM port")
+                return
             net = str(adcSelect.currentText())
             if (net == "Select"):
                 set_textbox("Please select an ADC")
@@ -212,6 +219,11 @@ class ProductionFwGUI(QDialog):
             adcLineEdit.setText(value)
 
         def set_pwm():
+            try:
+                gpioTester
+            except NameError:
+                set_textbox("Error: Please select a COM port")
+                return
             pwm = str(pwmSelect.currentText())
             if (pwm == "Select"):
                 set_textbox("Please select a PWM")
@@ -230,6 +242,11 @@ class ProductionFwGUI(QDialog):
             set_textbox(res)
 
         def read_pwm():
+            try:
+                gpioTester
+            except NameError:
+                set_textbox("Error: Please select a COM port")
+                return
             pwm = str(pwmSelect.currentText())
             if (pwm == "Select"):
                 set_textbox("Please select a PWM")
@@ -239,15 +256,26 @@ class ProductionFwGUI(QDialog):
             #TODO: finish this
         
         def get_files():
+            try:
+                gpioTester
+            except NameError:
+                set_textbox("Error: Please select a COM port")
+                return
             parser = ScriptParser(gpioTester)
             fname = QFileDialog.getOpenFileName(self, 'Open file', '~/',"Text files (*.txt)")
             parser.parseFile(str(fname[0]))
-    
+        
+        def set_com_port():
+            selected = str(comPortSelect.currentText())
+            parsed = selected.split()
+            port = parsed[0]
+            set_serial_port(port)
+
         gpioSetButton.clicked.connect(set_gpio)
         gpioReadButton.clicked.connect(read_gpio)
         adcReadButton.clicked.connect(read_adc)
         pwmSetButton.clicked.connect(set_pwm)
-        comPortSelect.currentTextChanged.connect(set_serial_port)
+        comPortSelect.currentTextChanged.connect(set_com_port)
         scriptButton.clicked.connect(get_files)
 
 if __name__ == '__main__':
@@ -255,6 +283,7 @@ if __name__ == '__main__':
     import sys
 
     app = QApplication(sys.argv)
+    gallery = ProductionFwGUI()
     gallery = ProductionFwGUI()
     gallery.show()
     
