@@ -1270,6 +1270,10 @@ QComboBox::indicator:alternate {
   background: #19232D;
 }
 
+QComboBox::item {
+  max-height: 1.5em;
+}
+
 QComboBox::item:alternate {
   background: #19232D;
 }
