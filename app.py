@@ -194,9 +194,6 @@ class ProductionFwGUI(QDialog):
                 gpioTester.set_gpio(pin, value)
         
         def read_gpio():
-            if not (isConnected):
-                set_textbox("Please select a COM port")
-                return
             net = str(gpioSelect.currentText())
             if (net == "Select"):
                 set_textbox("Please select a GPIO pin")
