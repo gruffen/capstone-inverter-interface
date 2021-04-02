@@ -222,7 +222,7 @@ class ProductionFwGUI(QDialog):
             else:
                 gpioTester.set_gpio(pin, value)
                 set_textbox("Signal: "+pin)
-                set_textbox("Set to: "+value)
+                set_textbox("Set to: "+str(value))
         
         #Function: read_gpio()
         #Arguments: None
@@ -280,16 +280,19 @@ class ProductionFwGUI(QDialog):
                 return
             mPwm = pinmap.getPwmMapping(pwm)
             param = str(pwmParamSelect.currentText())
-            if (param == "Control"):
-                value = int(pwmSetLineEdit.text())
-                res = gpioTester.set_pwm(mPwm, value)
-            elif (param == "Duty Cycle"):
-                value = int(pwmSetLineEdit.text())
-                res = gpioTester.set_pwmdutycycle(value)
-            elif (param == "Frequency"):
-                value = int(pwmSetLineEdit.text())
-                res = gpioTester.set_pwmfrequency(value)
-            set_textbox(res)
+            try:
+                if (param == "Control"):
+                    value = int(pwmSetLineEdit.text())
+                    res = gpioTester.set_pwm(mPwm, value)
+                elif (param == "Duty Cycle"):
+                    value = int(pwmSetLineEdit.text())
+                    res = gpioTester.set_pwmdutycycle(value)
+                elif (param == "Frequency"):
+                    value = int(pwmSetLineEdit.text())
+                    res = gpioTester.set_pwmfrequency(value)
+                set_textbox(res)
+            except:
+                set_textbox("PWM features unavailable in this revision.")
 
         #Function:read_pwm()
         #Arguments: None
@@ -305,8 +308,11 @@ class ProductionFwGUI(QDialog):
             if (pwm == "Select"):
                 set_textbox("Please select a PWM")
                 return
-            mPwm = pinmap.getPwmMapping(pwm)
-            param = str(pwmParamSelect.currentText())
+            try:
+                mPwm = pinmap.getPwmMapping(pwm)
+                param = str(pwmParamSelect.currentText())
+            except:
+                set_textbox("PWM features in development.")
             #TODO: finish this
         
         #Function: get_files()
