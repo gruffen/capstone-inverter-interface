@@ -56,7 +56,7 @@ class GpioTester(object):
         print("Response: " + str(response))
 
         values = re.findall(r'\d+', str(response))
-        return values[2]
+        return values [2]
 
     def set_pwm(self, pwm, enable):
         print("Set " + pwm + " to " + ("disabled", "enabled")[enable])

@@ -14,6 +14,11 @@ class ScriptParser:
     def __init__(self, mGpioTester):
         self.gpioTester = mGpioTester
 
+    #Function: parseLine(self, line)
+    #Arugment String called line.
+    #Return: 0
+    #Purpose: This function parses one line of the passed in text file to determine what command to pass
+    #to the firmware. It is basically running a state machine.
     def parseLine(self, line):
         g = line.split()
         self.state = "IDLE"
@@ -103,6 +108,10 @@ class ScriptParser:
         
         return 0
 
+    #Function: parseFile(self, filename)
+    #Argument: String called filename
+    #Return: 0
+    #Purpose: Function grabs each line of the input file to be parsed. 
     def parseFile(self, filename):
         with open(filename) as f:
             for line in f:

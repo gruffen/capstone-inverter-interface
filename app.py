@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+#Authors: Alex Lin, Justin Heimerl, Henry Roberts, Pedro Solares
+#Purpose: The purpose of this file is to build and run the main GUI for the SONNEN FW interface.
+
+
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
@@ -14,14 +19,24 @@ import GpioTester
 import PinMappings as pinmap
 import serial
 import serial.tools.list_ports
+from datetime import datetime
 
 from ScriptParser import ScriptParser
 
 BAUDRATE = 115200
 
+
+#Function: get_serial_ports()
+#Arguments: None
+#Return: List of serial ports available
+#Purpose: Give list of serial ports to find the board.
 def get_serial_ports():
     return serial.tools.list_ports.comports()
 
+#Function: set_serial_ports()
+#Arguments: Serial port object: port
+#Return: None
+#Purpose: Passes the correct port to the GPIO tester script.
 def set_serial_port(port):
     global gpioTester
     gpioTester = GpioTester.GpioTester()
@@ -33,15 +48,28 @@ class ProductionFwGUI(QDialog):
 
         #STD output widget
         #self.le = QtWidgets.QLineEdit()
+
         self.te = QtWidgets.QTextEdit()
         clear_button = QPushButton("Clear")
+
+        #Function:clear_text()
+        #Arguments: none
+        #Return: none
+        #Purpose: Clear the textbox in the GUI.
         def clear_text():
             self.te.setText("")
+        
         clear_button.clicked.connect(clear_text)
         
         #used to write outputs
+        #Function:set_textbox(message)
+        #Arguments: String called message.
+        #Return: none
+        #Purpose:Sets the textbox to contain the string as well as the data/time.
         def set_textbox(message):
-            self.te.setText(self.te.toPlainText()+message+"\n")
+            now = datetime.now()
+            dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+            self.te.setText(self.te.toPlainText()+"["+dt_string+"] "+message+"\n")
 
         # COM port select widgets
         comPortSelect = QComboBox(self)        
@@ -159,6 +187,10 @@ class ProductionFwGUI(QDialog):
 
         self.setStyleSheet(open('main.qss').read())
         
+        #Function:set_gpio()
+        #Arguments: None
+        #Return: None
+        #Purpose: Tells the firmware to set the selected GPIO pin to the value in the value box.
         def set_gpio():
             try:
                 gpioTester
@@ -189,7 +221,13 @@ class ProductionFwGUI(QDialog):
                 gpioTester.set_relay("AcK8", value)
             else:
                 gpioTester.set_gpio(pin, value)
+                set_textbox("Signal: "+pin)
+                set_textbox("Set to: "+value)
         
+        #Function: read_gpio()
+        #Arguments: None
+        #Return: None
+        #Purpose: Prints the value of the selected GPIO to value box.
         def read_gpio():
             try:
                 gpioTester
@@ -202,8 +240,14 @@ class ProductionFwGUI(QDialog):
                 return
             pin = pinmap.getGpioMapping(net)
             value = gpioTester.get_gpio(pin)
+            set_textbox("Signal: "+pin)
+            set_textbox("Return: "+value)
             gpioLineEdit.setText(value)
         
+        #Function: read_adc()
+        #Arguments: None
+        #Return: None
+        #Purpose: Reads the selected ADC in the adcSelect box. Prints the value to the adcLineEdit box.
         def read_adc():
             try:
                 gpioTester
@@ -216,8 +260,14 @@ class ProductionFwGUI(QDialog):
                 return
             channel = pinmap.getAdcMapping(net)
             value = gpioTester.get_adc(channel)
+            set_textbox("Signal: "+net)
+            set_textbox("Return: "+value)
             adcLineEdit.setText(value)
 
+        #Function: set_pwm()
+        #Arguments: None
+        #Return: None
+        #Purpose: Allows user to set various PWM parameters (many of these need to be implemented in GpioTester.py)
         def set_pwm():
             try:
                 gpioTester
@@ -241,6 +291,10 @@ class ProductionFwGUI(QDialog):
                 res = gpioTester.set_pwmfrequency(value)
             set_textbox(res)
 
+        #Function:read_pwm()
+        #Arguments: None
+        #Return: None
+        #Purpose:Gives information about the selected PWM, not implemented correctly yet.
         def read_pwm():
             try:
                 gpioTester
@@ -255,6 +309,10 @@ class ProductionFwGUI(QDialog):
             param = str(pwmParamSelect.currentText())
             #TODO: finish this
         
+        #Function: get_files()
+        #Arguments: None
+        #Return: none
+        #Purpose: Allows the user to select a file to pass into the script parser.
         def get_files():
             try:
                 gpioTester
@@ -265,11 +323,20 @@ class ProductionFwGUI(QDialog):
             fname = QFileDialog.getOpenFileName(self, 'Open file', '~/',"Text files (*.txt)")
             parser.parseFile(str(fname[0]))
         
+        #Function: set_com_port()
+        #Arguments: None
+        #Return: None
+        #Purpose: Sets the COM port as selected. handles invalid COM ports gracefully (no crashing).
         def set_com_port():
             selected = str(comPortSelect.currentText())
             parsed = selected.split()
             port = parsed[0]
-            set_serial_port(port)
+            try:
+                set_serial_port(port)
+                set_textbox("Serial connection established")
+            except:
+                set_textbox("Error: Invalid COM port")
+
 
         gpioSetButton.clicked.connect(set_gpio)
         gpioReadButton.clicked.connect(read_gpio)
