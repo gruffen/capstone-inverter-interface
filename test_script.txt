@@ -2,3 +2,5 @@ wait 1
 read_gpio Fault_Sig4
 wait 1
 set_gpio K7_Relay 1
+wait 1
+read_adc V_AC_L1

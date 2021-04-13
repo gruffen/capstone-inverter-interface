@@ -43,6 +43,9 @@ def set_serial_port(port):
     gpioTester.init_board(BAUDRATE, port)
 
 class ProductionFwGUI(QDialog):
+    outputToTextFile = False
+    outputFile = None
+
     def __init__(self, parent=None):
         super(ProductionFwGUI, self).__init__(parent)
 
@@ -59,7 +62,12 @@ class ProductionFwGUI(QDialog):
         def clear_text():
             self.te.setText("")
         
-        clear_button.clicked.connect(clear_text)
+
+        def getDateTime():
+            now = datetime.now()
+            dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+            return dt_string
+
         
         #used to write outputs
         #Function:set_textbox(message)
@@ -67,9 +75,41 @@ class ProductionFwGUI(QDialog):
         #Return: none
         #Purpose:Sets the textbox to contain the string as well as the data/time.
         def set_textbox(message):
-            now = datetime.now()
-            dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+            dt_string = getDateTime()
             self.te.setText(self.te.toPlainText()+"["+dt_string+"] "+message+"\n")
+            #self.te.moveCursor.End()
+
+        def handleFile():
+            filePath = textFilePath.text()
+            try:
+                self.outputFile = open(filePath,'a+')
+                self.outputToTextFile = True
+                set_textbox("Output file path set to: "+filePath)
+            except:
+                set_textbox("Error: Invalid File Path")
+
+        def stopWritingFile():
+            try:
+                if(self.outputToTextFile):
+                    self.outputFile.close()
+                    self.outputToTextFile = False
+                    set_textbox("File closed successfully")
+                else:
+                    set_textbox("No file currently open")
+            except:
+                set_textbox("Error: No file set")
+
+    
+        #Text file select widgets
+        textFileSelectLabel = QLabel("Output File Path:")
+        textFilePath = QLineEdit('')
+        textFilePath.setReadOnly(False)
+        textPathSetButton = QPushButton("Set File Path")
+        textPathCloseButton = QPushButton("Close Output File")
+        
+
+
+
 
         # COM port select widgets
         comPortSelect = QComboBox(self)        
@@ -167,9 +207,18 @@ class ProductionFwGUI(QDialog):
         row3Layout.addStretch(1)
 
         row4Layout = QHBoxLayout()
+        row4Layout.addWidget(textFileSelectLabel)
+        row4Layout.addWidget(textFilePath)
+        row4Layout.addWidget(textPathSetButton)
+        row4Layout.addWidget(textPathCloseButton)
+
+
+        row5Layout = QHBoxLayout()
         #row4Layout.addWidget(self.le)
-        row4Layout.addWidget(self.te)
-        row4Layout.addWidget(clear_button)
+        row5Layout.addWidget(self.te)
+        row5Layout.addWidget(clear_button)
+
+        
         
         mainLayout = QGridLayout()
         mainLayout.addLayout(topLayout,0,0)
@@ -177,6 +226,7 @@ class ProductionFwGUI(QDialog):
         mainLayout.addLayout(row2Layout,2,0)
         mainLayout.addLayout(row3Layout,3,0)
         mainLayout.addLayout(row4Layout,4,0)
+        mainLayout.addLayout(row5Layout,5,0)
      
         self.setLayout(mainLayout)
 
@@ -205,24 +255,76 @@ class ProductionFwGUI(QDialog):
             value = 1 if gpioHighLowSelect.currentText() == 'High' else 0
             # TODO: clean this up
             if (pin == "Gpio21"):
-                set_textbox("GPIO " + pin + " is a relay")
+                set_textbox("GPIO " + net + " is a relay")
+                set_textbox("Signal: "+net)
+                set_textbox("Set to: "+str(value))
                 gpioTester.set_relay("AcK7", value)
+                if(self.outputToTextFile):
+                    self.outputFile.write(getDateTime())
+                    self.outputFile.write(" ")
+                    self.outputFile.write("AcK7")
+                    self.outputFile.write(" ")
+                    self.outputFile.write(str(value))
+                    self.outputFile.write("\n")
             elif (pin == "Gpio24"):
                 set_textbox("GPIO " + pin + " is a relay")
-                gpioTester.set_relay("AcK5", value)
-            elif (pin == "Gpio25"):
-                set_textbox("GPIO " + pin + " is a relay")
-                gpioTester.set_relay("AcK6", value)
-            elif (pin == "Gpio37"):
-                set_textbox("GPIO " + pin + " is a relay")
-                gpioTester.set_relay("DcK1K2", value)
-            elif (pin == "Gpio49"):
-                set_textbox("GPIO " + pin + " is a relay")
-                gpioTester.set_relay("AcK8", value)
-            else:
-                gpioTester.set_gpio(pin, value)
                 set_textbox("Signal: "+pin)
                 set_textbox("Set to: "+str(value))
+                gpioTester.set_relay("AcK5", value)
+                if(self.outputToTextFile):
+                    self.outputFile.write(getDateTime())
+                    self.outputFile.write(" ")
+                    self.outputFile.write("AcK5")
+                    self.outputFile.write(" ")
+                    self.outputFile.write(str(value))
+                    self.outputFile.write("\n")
+            elif (pin == "Gpio25"):
+                set_textbox("GPIO " + net + " is a relay")
+                set_textbox("Signal: "+net)
+                set_textbox("Set to: "+str(value))
+                gpioTester.set_relay("AcK6", value)
+                if(self.outputToTextFile):
+                    self.outputFile.write(getDateTime())
+                    self.outputFile.write(" ")
+                    self.outputFile.write("AcK6")
+                    self.outputFile.write(" ")
+                    self.outputFile.write(str(value))
+                    self.outputFile.write("\n")
+            elif (pin == "Gpio37"):
+                set_textbox("GPIO " + net + " is a relay")
+                set_textbox("Signal: "+net)
+                set_textbox("Set to: "+str(value))
+                gpioTester.set_relay("DcK1K2", value)
+                if(self.outputToTextFile):
+                    self.outputFile.write(getDateTime())
+                    self.outputFile.write(" ")
+                    self.outputFile.write("DcK1K2")
+                    self.outputFile.write(" ")
+                    self.outputFile.write(str(value))
+                    self.outputFile.write("\n")
+            elif (pin == "Gpio49"):
+                set_textbox("GPIO " + net + " is a relay")
+                set_textbox("Signal: "+net)
+                set_textbox("Set to: "+str(value))
+                gpioTester.set_relay("AcK8", value)
+                if(self.outputToTextFile):
+                    self.outputFile.write(getDateTime())
+                    self.outputFile.write(" ")
+                    self.outputFile.write("AcK8")
+                    self.outputFile.write(" ")
+                    self.outputFile.write(str(value))
+                    self.outputFile.write("\n")
+            else:
+                gpioTester.set_gpio(pin, value)
+                set_textbox("Signal: "+net)
+                set_textbox("Set to: "+str(value))
+                if(self.outputToTextFile):
+                    self.outputFile.write(getDateTime())
+                    self.outputFile.write(" ")
+                    self.outputFile.write(str(net))
+                    self.outputFile.write(" ")
+                    self.outputFile.write(str(value))
+                    self.outputFile.write("\n")
         
         #Function: read_gpio()
         #Arguments: None
@@ -240,8 +342,15 @@ class ProductionFwGUI(QDialog):
                 return
             pin = pinmap.getGpioMapping(net)
             value = gpioTester.get_gpio(pin)
-            set_textbox("Signal: "+pin)
+            set_textbox("Signal: "+net)
             set_textbox("Return: "+value)
+            if(self.outputToTextFile):
+                self.outputFile.write(getDateTime())
+                self.outputFile.write(" ")
+                self.outputFile.write(net)
+                self.outputFile.write(" ")
+                self.outputFile.write(value)
+                self.outputFile.write("\n")
             gpioLineEdit.setText(value)
         
         #Function: read_adc()
@@ -262,6 +371,13 @@ class ProductionFwGUI(QDialog):
             value = gpioTester.get_adc(channel)
             set_textbox("Signal: "+net)
             set_textbox("Return: "+value)
+            if(self.outputToTextFile):
+                self.outputFile.write(getDateTime())
+                self.outputFile.write(" ")
+                self.outputFile.write(net)
+                self.outputFile.write(" ")
+                self.outputFile.write(value)
+                self.outputFile.write("\n")
             adcLineEdit.setText(value)
 
         #Function: set_pwm()
@@ -325,7 +441,7 @@ class ProductionFwGUI(QDialog):
             except NameError:
                 set_textbox("Error: Please select a COM port")
                 return
-            parser = ScriptParser(gpioTester)
+            parser = ScriptParser(gpioTester,self.outputToTextFile,self.outputFile)
             fname = QFileDialog.getOpenFileName(self, 'Open file', '~/',"Text files (*.txt)")
             parser.parseFile(str(fname[0]))
         
@@ -350,6 +466,10 @@ class ProductionFwGUI(QDialog):
         pwmSetButton.clicked.connect(set_pwm)
         comPortSelect.currentTextChanged.connect(set_com_port)
         scriptButton.clicked.connect(get_files)
+        textPathSetButton.clicked.connect(handleFile)
+        textPathCloseButton.clicked.connect(stopWritingFile)
+        clear_button.clicked.connect(clear_text)
+
 
 if __name__ == '__main__':
 
@@ -361,3 +481,5 @@ if __name__ == '__main__':
     gallery.show()
     
     sys.exit(app.exec_())
+    if(self.outputToTextFile):
+        self.outputFile.close()

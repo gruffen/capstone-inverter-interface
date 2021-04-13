@@ -4,6 +4,8 @@ import os
 import time
 import GpioTester
 import PinMappings as pinmap
+from PyQt5.QtCore import Qt
+from datetime import datetime
 
 from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
 
@@ -11,8 +13,15 @@ class ScriptParser:
     state = "IDLE"
     gpioTester = None
 
-    def __init__(self, mGpioTester):
+    def __init__(self, mGpioTester,outputBool,outputFile):
         self.gpioTester = mGpioTester
+        self.outputToTextFile = outputBool
+        self.outputFile = outputFile
+
+    def getDateTime(self):
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        return dt_string
 
     #Function: parseLine(self, line)
     #Arugment String called line.
@@ -50,13 +59,27 @@ class ScriptParser:
             elif self.state == "GPIO_READ_CMD":
                 pin = pinmap.getGpioMapping(tokval)
                 if (pin != None):
-                    self.gpioTester.get_gpio(pin)
+                    val = self.gpioTester.get_gpio(pin)
+                    if(self.outputToTextFile):
+                        self.outputFile.write(self.getDateTime())
+                        self.outputFile.write(" r ")
+                        self.outputFile.write(str(tokval))
+                        self.outputFile.write(" ")
+                        self.outputFile.write(str(val))
+                        self.outputFile.write("\n")
                 else:
                     print("Invalid argument for GPIO read. Pin does not exist")
                     raise
 
             elif self.state == "GPIO_SET_CMD":
                 pin = pinmap.getGpioMapping(tokval)
+                #if(outputToTextFile):
+                #    outputFile.write(getDateTime())
+                #    outputFile.write("w ")
+                #    outputFile.write(str(pin))
+                #    outputFile.write(" ")
+                #    outputFile.write(str(tokval))
+                #    outputFile.write("\n")
                 if (pin != None):
                     self.state = "GPIO_SET_ARG"
                 else:
@@ -67,23 +90,72 @@ class ScriptParser:
                 if (int(tokval) == 0 or int(tokval) == 1):
                     if (pin == "Gpio21"):
                         self.gpioTester.set_relay("AcK7", tokval)
+                        if(self.outputToTextFile):
+                            self.outputFile.write(self.getDateTime())
+                            self.outputFile.write(" w ")
+                            self.outputFile.write("AcK7")
+                            self.outputFile.write(" ")
+                            self.outputFile.write(str(tokval))
+                            self.outputFile.write("\n")
                     elif (pin == "Gpio24"):
                         self.gpioTester.set_relay("AcK5", tokval)
+                        if(self.outputToTextFile):
+                            outputFile.write(self.getDateTime())
+                            self.outputFile.write(" w ")
+                            self.outputFile.write("AcK5")
+                            self.outputFile.write(" ")
+                            self.outputFile.write(str(tokval))
+                            self.outputFile.write("\n")
                     elif (pin == "Gpio25"):
                         self.gpioTester.set_relay("AcK6", tokval)
+                        if(self.outputToTextFile):
+                            outputFile.write(self.getDateTime())
+                            self.outputFile.write(" w ")
+                            self.outputFile.write("AcK6")
+                            self.outputFile.write(" ")
+                            self.outputFile.write(str(tokval))
+                            self.outputFile.write("\n")
                     elif (pin == "Gpio37"):
                         self.gpioTester.set_relay("DcK1K2", tokval)
+                        if(self.outputToTextFile):
+                            self.outputFile.write(self.getDateTime())
+                            self.outputFile.write(" w ")
+                            self.outputFile.write("DcK1K2")
+                            self.outputFile.write(" ")
+                            self.outputFile.write(str(tokval))
+                            self.outputFile.write("\n")
                     elif (pin == "Gpio49"):
                         self.gpioTester.set_relay("AcK8", tokval)
+                        if(self.outputToTextFile):
+                            self.outputFile.write(self.getDateTime())
+                            self.outputFile.write(" w ")
+                            self.outputFile.write("AcK8")
+                            self.outputFile.write(" ")
+                            self.outputFile.write(str(tokval))
+                            self.outputFile.write("\n")
                     else:
                         self.gpioTester.set_gpio(pin, value)
+                        if(self.outputToTextFile):
+                            self.outputFile.write(self.getDateTime())
+                            self.outputFile.write(" w ")
+                            self.outputFile.write(str(pin))
+                            self.outputFile.write(" ")
+                            self.outputFile.write(str(value))
+                            self.outputFile.write("\n")
                 else:
                     print("Invalid argument for GPIO set. Must be either 0 or 1.")
                     raise
 
             elif self.state == "ADC_READ_CMD":
                 if (pinmap.getAdcMapping(tokval) != None):
-                    self.gpioTester.read_adc(toknum)
+                    self.gpioTester.get_adc(pinmap.getAdcMapping(tokval))
+                    if(self.outputToTextFile):
+                        self.outputFile.write(self.getDateTime())
+                        self.outputFile.write(" r ")
+                        self.outputFile.write(str(tokval))
+                        self.outputFile.write(" ")
+                        self.outputFile.write(str(self.gpioTester.get_adc(pinmap.getAdcMapping(tokval))))
+                        self.outputFile.write("\n")
                 else:
                     print("Invalid argument for ADC read. Pin does not exist")
                     raise
