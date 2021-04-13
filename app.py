@@ -261,7 +261,7 @@ class ProductionFwGUI(QDialog):
                 gpioTester.set_relay("AcK7", value)
                 if(self.outputToTextFile):
                     self.outputFile.write(getDateTime())
-                    self.outputFile.write(" ")
+                    self.outputFile.write(" w ")
                     self.outputFile.write("AcK7")
                     self.outputFile.write(" ")
                     self.outputFile.write(str(value))
@@ -273,7 +273,7 @@ class ProductionFwGUI(QDialog):
                 gpioTester.set_relay("AcK5", value)
                 if(self.outputToTextFile):
                     self.outputFile.write(getDateTime())
-                    self.outputFile.write(" ")
+                    self.outputFile.write(" w ")
                     self.outputFile.write("AcK5")
                     self.outputFile.write(" ")
                     self.outputFile.write(str(value))
@@ -285,7 +285,7 @@ class ProductionFwGUI(QDialog):
                 gpioTester.set_relay("AcK6", value)
                 if(self.outputToTextFile):
                     self.outputFile.write(getDateTime())
-                    self.outputFile.write(" ")
+                    self.outputFile.write(" w ")
                     self.outputFile.write("AcK6")
                     self.outputFile.write(" ")
                     self.outputFile.write(str(value))
@@ -297,7 +297,7 @@ class ProductionFwGUI(QDialog):
                 gpioTester.set_relay("DcK1K2", value)
                 if(self.outputToTextFile):
                     self.outputFile.write(getDateTime())
-                    self.outputFile.write(" ")
+                    self.outputFile.write(" w ")
                     self.outputFile.write("DcK1K2")
                     self.outputFile.write(" ")
                     self.outputFile.write(str(value))
@@ -309,7 +309,7 @@ class ProductionFwGUI(QDialog):
                 gpioTester.set_relay("AcK8", value)
                 if(self.outputToTextFile):
                     self.outputFile.write(getDateTime())
-                    self.outputFile.write(" ")
+                    self.outputFile.write(" w ")
                     self.outputFile.write("AcK8")
                     self.outputFile.write(" ")
                     self.outputFile.write(str(value))
@@ -320,7 +320,7 @@ class ProductionFwGUI(QDialog):
                 set_textbox("Set to: "+str(value))
                 if(self.outputToTextFile):
                     self.outputFile.write(getDateTime())
-                    self.outputFile.write(" ")
+                    self.outputFile.write(" w ")
                     self.outputFile.write(str(net))
                     self.outputFile.write(" ")
                     self.outputFile.write(str(value))
@@ -346,7 +346,7 @@ class ProductionFwGUI(QDialog):
             set_textbox("Return: "+value)
             if(self.outputToTextFile):
                 self.outputFile.write(getDateTime())
-                self.outputFile.write(" ")
+                self.outputFile.write(" r ")
                 self.outputFile.write(net)
                 self.outputFile.write(" ")
                 self.outputFile.write(value)
@@ -373,7 +373,7 @@ class ProductionFwGUI(QDialog):
             set_textbox("Return: "+value)
             if(self.outputToTextFile):
                 self.outputFile.write(getDateTime())
-                self.outputFile.write(" ")
+                self.outputFile.write(" r ")
                 self.outputFile.write(net)
                 self.outputFile.write(" ")
                 self.outputFile.write(value)

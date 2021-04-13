@@ -185,9 +185,12 @@ class ScriptParser:
     #Return: 0
     #Purpose: Function grabs each line of the input file to be parsed. 
     def parseFile(self, filename):
-        with open(filename) as f:
-            for line in f:
-                ret = self.parseLine(line)
+        try:
+            with open(filename) as f:
+                for line in f:
+                    ret = self.parseLine(line)
+        except:
+            return 0
         
         return 0
 
