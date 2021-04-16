@@ -1421,7 +1421,6 @@ QLineEdit:disabled {
 
 QLineEdit:hover {
   border: 1px solid #148CD2;
-  color: #F0F0F0;
 }
 
 QLineEdit:focus {

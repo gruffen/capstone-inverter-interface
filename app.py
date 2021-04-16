@@ -3,8 +3,6 @@
 #Authors: Alex Lin, Justin Heimerl, Henry Roberts, Pedro Solares
 #Purpose: The purpose of this file is to build and run the main GUI for the SONNEN FW interface.
 
-
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
@@ -106,10 +104,6 @@ class ProductionFwGUI(QDialog):
         textFilePath.setReadOnly(False)
         textPathSetButton = QPushButton("Set File Path")
         textPathCloseButton = QPushButton("Close Output File")
-        
-
-
-
 
         # COM port select widgets
         comPortSelect = QComboBox(self)        
@@ -218,8 +212,6 @@ class ProductionFwGUI(QDialog):
         row5Layout.addWidget(self.te)
         row5Layout.addWidget(clear_button)
 
-        
-        
         mainLayout = QGridLayout()
         mainLayout.addLayout(topLayout,0,0)
         mainLayout.addLayout(row1Layout,1,0)
@@ -233,7 +225,7 @@ class ProductionFwGUI(QDialog):
         self.setWindowTitle("Production FW Interface")
         QApplication.setStyle(QStyleFactory.create('Fusion'))
         self.setFixedWidth(1000)
-        self.setFixedHeight(250)
+        self.setFixedHeight(550)
 
         self.setStyleSheet(open('main.qss').read())
         
