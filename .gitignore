@@ -1,1 +1,5 @@
 __pycache__/
+GpioTester.pyc
+PinMappings.pyc
+ScriptParser.pyc
+SerialConnector.pyc

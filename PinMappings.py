@@ -28,8 +28,8 @@ gpioMapping = {
     'EXT-DI2': 'Gpio62',
     'EXT-DI1': 'Gpio63',
     'GF-PWM': 'Gpio68',
-    'K_DC_Main_C28': 'Gpio0',
-    'C28_AC_Relay_Sfty_EN': 'Gpio1',
+    'K_DC_Main_C28': 'Gpio129',
+    'C28_AC_Relay_Sfty_EN': 'Gpio128',
     'MOD_CMP': 'Gpio2',
     'RCD_TRIP_C28': 'Gpio3'
 }

@@ -23,7 +23,6 @@ from ScriptParser import ScriptParser
 
 BAUDRATE = 115200
 
-
 #Function: get_serial_ports()
 #Arguments: None
 #Return: List of serial ports available
