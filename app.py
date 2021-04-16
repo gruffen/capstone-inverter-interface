@@ -451,7 +451,6 @@ class ProductionFwGUI(QDialog):
             except:
                 set_textbox("Error: Invalid COM port")
 
-
         gpioSetButton.clicked.connect(set_gpio)
         gpioReadButton.clicked.connect(read_gpio)
         adcReadButton.clicked.connect(read_adc)
@@ -461,7 +460,6 @@ class ProductionFwGUI(QDialog):
         textPathSetButton.clicked.connect(handleFile)
         textPathCloseButton.clicked.connect(stopWritingFile)
         clear_button.clicked.connect(clear_text)
-
 
 if __name__ == '__main__':
 
