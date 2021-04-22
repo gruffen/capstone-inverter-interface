@@ -19,6 +19,8 @@ import serial
 import serial.tools.list_ports
 from datetime import datetime
 
+import pdb
+
 from ScriptParser import ScriptParser
 
 BAUDRATE = 115200
@@ -374,7 +376,7 @@ class ProductionFwGUI(QDialog):
         #Function: set_pwm()
         #Arguments: None
         #Return: None
-        #Purpose: Allows user to set various PWM parameters (many of these need to be implemented in GpioTester.py)
+        #Purpose: Allows user to set various PWM parameters
         def set_pwm():
             try:
                 gpioTester
@@ -387,20 +389,37 @@ class ProductionFwGUI(QDialog):
                 return
             mPwm = pinmap.getPwmMapping(pwm)
             param = str(pwmParamSelect.currentText())
-            try:
-                if (param == "Control"):
-                    value = int(pwmSetLineEdit.text())
-                    res = gpioTester.set_pwm(mPwm, value)
-                elif (param == "Duty Cycle"):
-                    value = int(pwmSetLineEdit.text())
-                    res = gpioTester.set_pwmdutycycle(value)
-                elif (param == "Frequency"):
-                    value = int(pwmSetLineEdit.text())
-                    res = gpioTester.set_pwmfrequency(value)
-                set_textbox(res)
-            except:
-                set_textbox("PWM features unavailable in this revision.")
-
+            if (param == "Control"):
+                value = int(pwmSetLineEdit.text())
+                if (value != 0 and value != 1):
+                    set_textbox("PWM Control value must be 0 or 1")
+                    return
+                res = gpioTester.set_pwm(mPwm, value)
+            elif (param == "Duty Cycle"):
+                value = int(pwmSetLineEdit.text())
+                if (value < 0 or value > 100):
+                    set_textbox("PWM duty cycle must be between 0 and 100")
+                    return
+                res = gpioTester.set_pwmdutycycle(value)
+            elif (param == "Frequency"):
+                value = int(pwmSetLineEdit.text())
+                if (value < 10000 or value > 80000):
+                    set_textbox("PWM frequency must be between 10kHz and 80kHz")
+                    return
+                res = gpioTester.set_pwmfrequency(value)
+            set_textbox("Signal: "+pwm)
+            set_textbox("Set to: "+str(value))
+            set_textbox("Return: "+res)
+            if(self.outputToTextFile):
+                self.outputFile.write(getDateTime())
+                self.outputFile.write(" w ")
+                self.outputFile.write(str(pwm))
+                self.outputFile.write(" ")
+                self.outputFile.write(param)
+                self.outputFile.write(" ")
+                self.outputFile.write(str(value))
+                self.outputFile.write("\n")
+                 
         #Function:read_pwm()
         #Arguments: None
         #Return: None
@@ -415,12 +434,8 @@ class ProductionFwGUI(QDialog):
             if (pwm == "Select"):
                 set_textbox("Please select a PWM")
                 return
-            try:
-                mPwm = pinmap.getPwmMapping(pwm)
-                param = str(pwmParamSelect.currentText())
-            except:
-                set_textbox("PWM features in development.")
-            #TODO: finish this
+
+            set_textbox("PWM control reading not permitted in this firmware revision.")
         
         #Function: get_files()
         #Arguments: None
@@ -454,6 +469,7 @@ class ProductionFwGUI(QDialog):
         gpioReadButton.clicked.connect(read_gpio)
         adcReadButton.clicked.connect(read_adc)
         pwmSetButton.clicked.connect(set_pwm)
+        pwmReadButton.clicked.connect(read_pwm)
         comPortSelect.currentTextChanged.connect(set_com_port)
         scriptButton.clicked.connect(get_files)
         textPathSetButton.clicked.connect(handleFile)

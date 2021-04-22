@@ -1,6 +1,6 @@
 wait 1
-read_gpio Fault_Sig4
+set_pwm_control PWM1 1
 wait 1
-set_gpio K7_Relay 1
+set_pwm_freq 10000
 wait 1
-read_adc V_AC_L1
+set_pwm_dutycycle 20

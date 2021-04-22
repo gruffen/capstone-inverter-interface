@@ -56,7 +56,7 @@ class GpioTester(object):
         print("Response: " + str(response))
 
         values = re.findall(r'\d+', str(response))
-        return values [2]
+        return values[2]
 
     def set_pwm(self, pwm, enable):
         print("Set " + pwm + " to " + ("disabled", "enabled")[enable])
@@ -74,19 +74,22 @@ class GpioTester(object):
             print("Response: " + str(response))
         else:
             print("Frequency should be between 10kHZ and 80kHZ")
+        
+        return str(response)
 
     def get_pwmfrequency(self, pwm_frequency):
-        print("Get pwm_frequency =" + pwm_frequency.upper())
-        self.__serial.send_get_pwmfrequency_command(pwm_frequency)
+        print("Get pwm_frequency =" + str(pwm_frequency))
+        self.__serial.send_get_pwmfrequency_command(str(pwm_frequency))
         response = self.__serial.readlines()
         print("Response: " + str(response))
 
-        return str(response)
+        values = re.findall(r'\d+', str(response))
+        return str(response), values[1]
 
     def set_pwmdutycycle(self, value):
         if value >= 0 and value <= 100:
             print("Set " + "pwm_dutycycle" + " = " + str(value))
-            self.__serial.send_set_pwmdutycycle_command(value)
+            self.__serial.send_set_pwmdutycycle_command(str(value))
             response = self.__serial.readlines()
             print("Response: " + str(response))
             return str(response)
@@ -94,15 +97,15 @@ class GpioTester(object):
             errortxt = "Dutycycle should be between 0 and 100"
             print(errortext)
             return errortxt
-        
-        
 
     def get_pwmdutycycle(self, pwm_dutycycle):
-        print("Get pwm_dutycycle = " + pwm_dutycycle.upper())
+        print("Get pwm_dutycycle = " + str(pwm_dutycycle))
         self.__serial.send_get_pwmdutycycle_command(pwm_dutycycle)
         response = self.__serial.readlines()
         print("Response: " + str(response))
-        
+
+        values = re.findall(r'\d+', str(response))
+        return str(response), values[1]
 
     @staticmethod
     def wait_any_key():

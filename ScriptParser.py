@@ -45,6 +45,10 @@ class ScriptParser:
                     self.state = "ADC_READ_CMD"
                 elif tokval.lower() == "set_pwm_control":
                     self.state = "PWM_CSET_CMD"
+                elif tokval.lower() == "set_pwm_freq":
+                    self.state = "PWM_SETFREQ_CMD"
+                elif tokval.lower() == "set_pwm_dutycycle":
+                    self.state = "PWM_SETDC_CMD"
                 else:
                     print("Invalid command")
                     raise
@@ -73,13 +77,6 @@ class ScriptParser:
 
             elif self.state == "GPIO_SET_CMD":
                 pin = pinmap.getGpioMapping(tokval)
-                #if(outputToTextFile):
-                #    outputFile.write(getDateTime())
-                #    outputFile.write("w ")
-                #    outputFile.write(str(pin))
-                #    outputFile.write(" ")
-                #    outputFile.write(str(tokval))
-                #    outputFile.write("\n")
                 if (pin != None):
                     self.state = "GPIO_SET_ARG"
                 else:
@@ -134,7 +131,7 @@ class ScriptParser:
                             self.outputFile.write(str(tokval))
                             self.outputFile.write("\n")
                     else:
-                        self.gpioTester.set_gpio(pin, value)
+                        self.gpioTester.set_gpio(pin, tokval)
                         if(self.outputToTextFile):
                             self.outputFile.write(self.getDateTime())
                             self.outputFile.write(" w ")
@@ -159,6 +156,7 @@ class ScriptParser:
                 else:
                     print("Invalid argument for ADC read. Pin does not exist")
                     raise
+
             elif self.state == "PWM_CSET_CMD":
                 pin = pinmap.getPwmMapping(tokval)
                 if (pin != None):
@@ -168,12 +166,46 @@ class ScriptParser:
                     raise
 
             elif self.state == "PWM_CSET_ARG":
-                if (tokval == 0 or tokval == 1):
-                    self.gpioTester.set_pwm(pin, tokval)
+                if (int(tokval) == 0 or int(tokval) == 1):
+                    self.gpioTester.set_pwm(str(pin), int(tokval))
+                    if(self.outputToTextFile):
+                        self.outputFile.write(self.getDateTime())
+                        self.outputFile.write(" w ")
+                        self.outputFile.write(str(pin))
+                        self.outputFile.write(" ")
+                        self.outputFile.write(str(tokval))
+                        self.outputFile.write("\n")
                 else:
                     print("Invalid argument for PWM control set. Must be either 0 or 1.")
                     raise
             
+            elif self.state == "PWM_SETFREQ_CMD":
+                if (int(tokval) >= 10000 and int(tokval) <= 80000):
+                    self.gpioTester.set_pwmfrequency(int(tokval))
+                    if(self.outputToTextFile):
+                        self.outputFile.write(self.getDateTime())
+                        self.outputFile.write(" w ")
+                        self.outputFile.write("frequency")
+                        self.outputFile.write(" ")
+                        self.outputFile.write(str(tokval))
+                        self.outputFile.write("\n")
+                else:
+                    print("Invalid argument for PWM frequency set. Frequency must be between 10000 and 80000.")
+                    raise
+            
+            elif self.state == "PWM_SETDC_CMD":
+                if (int(tokval) >= 0 and int(tokval) <= 100):
+                    self.gpioTester.set_pwmdutycycle(int(tokval))
+                    if(self.outputToTextFile):
+                        self.outputFile.write(self.getDateTime())
+                        self.outputFile.write(" w ")
+                        self.outputFile.write("duty cycle")
+                        self.outputFile.write(" ")
+                        self.outputFile.write(str(tokval))
+                        self.outputFile.write("\n")
+                else:
+                    print("Invalid argument for PWM duty cycle set. Duty cycle must be between 10000 and 80000.")
+                    raise
             else:
                 print("Invalid arguments")
                 raise
